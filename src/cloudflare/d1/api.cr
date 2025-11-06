@@ -69,28 +69,38 @@ module Cloudflare::D1
       @headers["Content-Type"] = "application/json"
       response = request(query: query)
 
-      Response(Array(Response::Database)).from_json response
+      Response(Array(Database)).from_json response
     rescue ex : JSON::SerializableError
       raise Cloudflare::D1::BadResponseException.new "Can't parse JSON response"
     end
 
     # Returns the specified D1 database.
-    def get(uuid)
+    def get(uuid : String)
       @headers["Content-Type"] = "application/json"
       response = request(path: "/#{uuid}")
 
-      Response(Response::Database).from_json response
+      Response(Database).from_json response
     rescue ex : JSON::SerializableError
       raise Cloudflare::D1::BadResponseException.new "Can't parse JSON response"
     end
 
-    private def request(method = "GET", path : String? = nil, query = nil)
+    # Returns the specified D1 database.
+    def create(name : String, region : HintLocation?)
+      @headers["Content-Type"] = "application/json"
+      response = request("POST", body: { name: name, primary_location_hint: region }.to_json)
+
+      Response(Database).from_json response
+    rescue ex : JSON::SerializableError
+      raise Cloudflare::D1::BadResponseException.new "Can't parse JSON response"
+    end
+
+    private def request(method = "GET", path : String? = nil, query = nil, body = nil)
       Log.debug { "Requesting -> #{method}, path: #{path}, query: #{query}" }
 
       url = URI.parse("#{@endpoint}#{path}")
       url.query = URI::Params.encode(query) unless query.nil?
 
-      response = HTTP::Client.exec method, url, headers: @headers
+      response = HTTP::Client.exec method, url, headers: @headers, body: body
       content_type = MIME::MediaType.parse(response.headers["Content-Type"])
 
       case content_type.media_type

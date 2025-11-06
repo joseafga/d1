@@ -13,10 +13,10 @@ describe Cloudflare::D1 do
     db.get "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   end
 
-  # it "Create D1 Database" do
-  #   db = Cloudflare::D1::DB.new
-  #   db.create "name", "region"
-  # end
+  it "Create D1 Database" do
+    db = Cloudflare::D1::DB.new
+    db.create "mydb", :enam
+  end
 
   # it "Update D1 Database" do
   #   db = Cloudflare::D1::DB.new
