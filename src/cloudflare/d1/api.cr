@@ -93,7 +93,7 @@ module Cloudflare::D1
     end
 
     # Returns the specified D1 database.
-    def create(name : String, region : HintLocation?)
+    def create(name : String, region : Location?)
       Response(Database).from_json request(method: "POST", body: { name: name, primary_location_hint: region }.to_json)
     rescue ex : JSON::SerializableError
       raise Cloudflare::D1::BadResponseException.new "Can't parse JSON response"

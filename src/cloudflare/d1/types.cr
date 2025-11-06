@@ -11,6 +11,8 @@ module Cloudflare::D1
     getter! name : String
     # *(Optional)*
     getter! num_tables : Int32
+    # *(Optional)*
+    getter! running_in_region : Location
     # Configuration for D1 read replication. *(Optional)*
     getter! read_replication : ReadReplication
     # D1 database identifier (UUID). *(Optional)*
@@ -34,7 +36,7 @@ module Cloudflare::D1
   end
 
   # The following hint locations are supported
-  enum HintLocation
+  enum Location
     WNAM
     ENAM
     WEUR
