@@ -4,8 +4,10 @@ describe Cloudflare::D1 do
 
   it "List D1 Databases" do
     db = Cloudflare::D1::DB.new
+    # basic list
     db.list
-    db.list({name: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"})
+    # list with query params
+    db.list "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", page: 1, per_page: 10
   end
 
   it "Get D1 Database" do

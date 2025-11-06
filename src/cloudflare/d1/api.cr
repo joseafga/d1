@@ -48,7 +48,10 @@ module Cloudflare::D1
     # Configuration parameters are optional and non-initialized, so they must be defined later
     def initialize
       @endpoint = "#{ENDPOINT}/accounts/#{Cloudflare::D1.config.account_id}/d1/database"
-      @headers = HTTP::Headers{"Authorization" => "Bearer #{Cloudflare::D1.config.api_token}"}
+      @headers = HTTP::Headers{
+        "Content-Type" => "application/json",
+        "Authorization" => "Bearer #{Cloudflare::D1.config.api_token}"
+      }
     end
 
     # Returns a list of D1 databases.
@@ -65,42 +68,42 @@ module Cloudflare::D1
     # Number of items per page. *(Optional)*
     # *per_page*: Number
     # (maximum: 10000, minimum: 10, default: 1000)
-    def list(query = nil)
-      @headers["Content-Type"] = "application/json"
-      response = request(query: query)
+    def list(name : String? = nil, page : Int32? = nil, per_page : Int32? = nil)
+      query = URI::Params.build do |q|
+        q.add "name", name unless name.nil?
+        q.add "page", page.to_s unless page.nil?
+        q.add "per_page", per_page.to_s unless per_page.nil?
+      end
 
-      Response(Array(Database)).from_json response
+      url = URI.parse(@endpoint)
+      url.query = query unless query.empty?
+
+      Response(Array(Database)).from_json request(url: url)
     rescue ex : JSON::SerializableError
       raise Cloudflare::D1::BadResponseException.new "Can't parse JSON response"
     end
 
     # Returns the specified D1 database.
     def get(uuid : String)
-      @headers["Content-Type"] = "application/json"
-      response = request(path: "/#{uuid}")
+      url = URI.parse("#{@endpoint}/#{uuid}")
 
-      Response(Database).from_json response
+      Response(Database).from_json request(url: url)
     rescue ex : JSON::SerializableError
       raise Cloudflare::D1::BadResponseException.new "Can't parse JSON response"
     end
 
     # Returns the specified D1 database.
     def create(name : String, region : HintLocation?)
-      @headers["Content-Type"] = "application/json"
-      response = request("POST", body: { name: name, primary_location_hint: region }.to_json)
-
-      Response(Database).from_json response
+      Response(Database).from_json request(method: "POST", body: { name: name, primary_location_hint: region }.to_json)
     rescue ex : JSON::SerializableError
       raise Cloudflare::D1::BadResponseException.new "Can't parse JSON response"
     end
 
-    private def request(method = "GET", path : String? = nil, query = nil, body = nil)
-      Log.debug { "Requesting -> #{method}, path: #{path}, query: #{query}" }
+    private def request(**params)
+      Log.debug { "Requesting -> #{params}" }
+      args = {method: "GET", url: @endpoint, headers: @headers}.merge(params)
 
-      url = URI.parse("#{@endpoint}#{path}")
-      url.query = URI::Params.encode(query) unless query.nil?
-
-      response = HTTP::Client.exec method, url, headers: @headers, body: body
+      response = HTTP::Client.exec(**args)
       content_type = MIME::MediaType.parse(response.headers["Content-Type"])
 
       case content_type.media_type
