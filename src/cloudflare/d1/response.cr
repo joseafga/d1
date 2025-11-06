@@ -10,19 +10,6 @@ module Cloudflare::D1
     # *(Optional)*
     getter result_info : ResultInfo?
 
-    struct Database
-      include JSON::Serializable
-
-      # Specifies the timestamp the resource was created as an ISO8601 string. *(Optional)*
-      getter! created_at : Time
-      # D1 database name. *(Optional)*
-      getter! name : String
-      # D1 database identifier (UUID). *(Optional)*
-      getter! uuid : String
-      # *(Optional)*
-      getter! version : String
-    end
-
     # Shared
     struct ResponseInfo
       include JSON::Serializable

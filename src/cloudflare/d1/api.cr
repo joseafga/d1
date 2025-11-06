@@ -1,5 +1,6 @@
 require "http/client"
 require "mime/media_type"
+require "./types"
 require "./response"
 
 module Cloudflare::D1

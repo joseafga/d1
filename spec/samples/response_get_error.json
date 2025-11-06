@@ -1,0 +1,11 @@
+{
+  "errors": [
+    {
+      "code": 7404,
+      "message": "The database xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx could not be found"
+    }
+  ],
+  "success": false,
+  "messages": [],
+  "result": null
+}
