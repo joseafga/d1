@@ -145,5 +145,25 @@ module Cloudflare::D1
         raise "Unknown Content-Type: #{content_type.media_type}"
       end
     end
+
+    # Open a context of the specified D1 database to run multiples queries.
+    def self.open(uuid : String, & : Context -> _)
+      db = Context.new(uuid)
+      yield db
+    end
+
+    struct Context
+      getter client : DB
+      getter uuid : String
+
+      def initialize(@uuid)
+        @client = DB.new
+      end
+
+      # DB.query wrapper
+      def exec(sql : String, args : Array(Any)? = nil)
+        client.query(uuid, sql, args)
+      end
+    end
   end
 end
