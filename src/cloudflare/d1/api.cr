@@ -119,6 +119,15 @@ module Cloudflare::D1
       raise Cloudflare::D1::BadResponseException.new "Can't parse JSON response"
     end
 
+    # Deletes the specified D1 database.
+    def delete(uuid : String)
+      url = URI.parse("#{@endpoint}/#{uuid}")
+
+      Response(Nil).from_json request(method: "DELETE", url: url)
+    rescue ex : JSON::SerializableError
+      raise Cloudflare::D1::BadResponseException.new "Can't parse JSON response"
+    end
+
     private def request(**params)
       Log.debug { "Requesting -> #{params}" }
       args = {method: "GET", url: @endpoint, headers: @headers}.merge(params)

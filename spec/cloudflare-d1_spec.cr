@@ -30,10 +30,10 @@ describe Cloudflare::D1 do
     db.update_partial "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   end
 
-  # it "Delete D1 Database" do
-  #   db = Cloudflare::D1::DB.new
-  #   db.delete "database_id"
-  # end
+  it "Delete D1 Database" do
+    db = Cloudflare::D1::DB.new
+    db.delete "c6f77138-cb17-4ef4-ace6-e6cc98a09408"
+  end
 
   # it "Query D1 Database" do
   #   db = Cloudflare::D1::DB.new
