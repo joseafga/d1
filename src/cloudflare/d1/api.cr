@@ -79,8 +79,6 @@ module Cloudflare::D1
       url.query = query unless query.empty?
 
       Response(Array(Database)).from_json request(url: url)
-    rescue ex : JSON::SerializableError
-      raise Cloudflare::D1::BadResponseException.new "Can't parse JSON response"
     end
 
     # Returns the specified D1 database.
@@ -88,15 +86,11 @@ module Cloudflare::D1
       url = URI.parse("#{@endpoint}/#{uuid}")
 
       Response(Database).from_json request(url: url)
-    rescue ex : JSON::SerializableError
-      raise Cloudflare::D1::BadResponseException.new "Can't parse JSON response"
     end
 
     # Returns the specified D1 database.
     def create(name : String, region : Location?)
       Response(Database).from_json request(method: "POST", body: { name: name, primary_location_hint: region }.to_json)
-    rescue ex : JSON::SerializableError
-      raise Cloudflare::D1::BadResponseException.new "Can't parse JSON response"
     end
 
     # Updates the specified D1 database.
@@ -104,8 +98,6 @@ module Cloudflare::D1
       url = URI.parse("#{@endpoint}/#{uuid}")
 
       Response(Database).from_json request(method: "PUT", url: url, body: { read_replication: read_replication }.to_json)
-    rescue ex : JSON::SerializableError
-      raise Cloudflare::D1::BadResponseException.new "Can't parse JSON response"
     end
 
     # Updates partially the specified D1 database.
@@ -115,8 +107,6 @@ module Cloudflare::D1
       body["read_replication"] = read_replication.to_json unless read_replication.nil?
 
       Response(Database).from_json request(method: "PATCH", url: url, body: body.to_json)
-    rescue ex : JSON::SerializableError
-      raise Cloudflare::D1::BadResponseException.new "Can't parse JSON response"
     end
 
     # Deletes the specified D1 database.
@@ -124,8 +114,6 @@ module Cloudflare::D1
       url = URI.parse("#{@endpoint}/#{uuid}")
 
       Response(Nil).from_json request(method: "DELETE", url: url)
-    rescue ex : JSON::SerializableError
-      raise Cloudflare::D1::BadResponseException.new "Can't parse JSON response"
     end
 
     private def request(**params)

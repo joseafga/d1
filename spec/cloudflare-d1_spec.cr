@@ -32,7 +32,7 @@ describe Cloudflare::D1 do
 
   it "Delete D1 Database" do
     db = Cloudflare::D1::DB.new
-    db.delete "c6f77138-cb17-4ef4-ace6-e6cc98a09408"
+    db.delete "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   end
 
   # it "Query D1 Database" do

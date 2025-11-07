@@ -7,7 +7,4 @@ require "./cloudflare/d1/api"
 module Cloudflare::D1
   VERSION = "0.1.0"
   Log     = ::Log.for("d1")
-
-  class BadResponseException < Exception
-  end
 end
