@@ -4,65 +4,17 @@ require "./types"
 require "./response"
 
 module Cloudflare::D1
-  # d1.database
-  #
-  # curl https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/d1/database \
-  #     -H "X-Auth-Email: $CLOUDFLARE_EMAIL" \
-  #     -H "X-Auth-Key: $CLOUDFLARE_API_KEY"\
-  #
-  # List D1 Databases -> V4PagePaginationArray<{ created_at, name, uuid, 1 more... }>
-  # get/accounts/{account_id}/d1/database
-
-  # Returns a list of D1 databases.
-  # Security
-
-  # The preferred authorization scheme for interacting with the Cloudflare API. Create a token.
-
-  # Example: Authorization: Bearer Sn3lZJTBX6kkg7OdcBUAxOO963GEIyGQqnFTOFYY
-  # Accepted Permissions (at least one required)
-
-  # D1 Read D1 Write
-  # path Parameters
-  # account_id: string
-  # (maxLength: 32)
-
-  # Account identifier tag.
-  # query Parameters
-  # name: stringOptional
-
-  # a database name to search for.
-  # page: numberOptional
-  # (minimum: 1, default: 1)
-
-  # Page number of paginated results.
-  # per_page: numberOptional
-  # (maximum: 10000, minimum: 10, default: 1000)
-
-  # Number of items per page.
-  class DB
-    @headers : HTTP::Headers
-
-    # Configuration parameters are optional and non-initialized, so they must be defined later
-    def initialize
-      @headers = HTTP::Headers{
-        "Content-Type" => "application/json",
-        "Authorization" => "Bearer #{D1.config.api_token}"
-      }
-    end
+  module Api
+    extend self
 
     # Returns a list of D1 databases.
     #
-    # *query* parameters:
+    # A database *name* to search for.
     #
-    # A database name to search for. *(Optional)*
-    # *name*: String
-    #
-    # Page number of paginated results. *(Optional)*
-    # *page*: Number
+    # *page* number of paginated results.
     # (minimum: 1, default: 1)
     #
-    # Number of items per page. *(Optional)*
-    # *per_page*: Number
+    # Number of items *per_page*.
     # (maximum: 10000, minimum: 10, default: 1000)
     def list(name : String? = nil, page : Int32? = nil, per_page : Int32? = nil)
       query = URI::Params.build do |q|
@@ -114,10 +66,10 @@ module Cloudflare::D1
 
     # Returns the query result as an object.
     #
-    # *sql* Your SQL query.
+    # Your *sql* query.
     # Supports multiple statements, joined by semicolons, which will be executed as a batch.
     #
-    # *args* SQL arguments. *(Optional)*
+    # SQL *args*.
     # Documentation say `Array<string>` but work with other basic types
     def query(uuid : String, sql : String, args : Array(Any)? = nil)
       url = URI.parse("#{D1.config.endpoint}/#{uuid}/query")
@@ -126,8 +78,15 @@ module Cloudflare::D1
     end
 
     private def request(**params)
-      Log.debug { "Requesting -> #{params}" }
-      args = {method: "GET", url: D1.config.endpoint, headers: @headers}.merge(params)
+      args = { # default params
+        method: "GET",
+        url: D1.config.endpoint,
+        headers: HTTP::Headers{
+          "Content-Type" => "application/json",
+          "Authorization" => "Bearer #{D1.config.api_token}"
+        }
+      }.merge(params)
+      Log.debug { "Requesting -> #{args}" }
 
       response = HTTP::Client.exec(**args)
       content_type = MIME::MediaType.parse(response.headers["Content-Type"])
