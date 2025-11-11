@@ -1,4 +1,4 @@
-module Cloudflare::D1
+module D1
   struct Response(T)
     include JSON::Serializable
 

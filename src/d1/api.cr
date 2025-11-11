@@ -1,9 +1,7 @@
 require "http/client"
 require "mime/media_type"
-require "./types"
-require "./response"
 
-module Cloudflare::D1
+module D1
   module Api
     extend self
 

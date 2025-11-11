@@ -1,4 +1,4 @@
-module Cloudflare::D1
+module D1
   ENDPOINT = "https://api.cloudflare.com/client/v4"
 
   class_getter config = Configuration.new
@@ -6,7 +6,7 @@ module Cloudflare::D1
   # Customize settings using a block.
   #
   # ```
-  # Cloudflare::D1.configure do |config|
+  # D1.configure do |config|
   #   cibfug.account_id = "023e105f4ecef8ad9ca31a8372d0c353"
   #   config.api_token = "Sn3lZJTBX6kkg7OdcBUAxOO963GEIyGQqnFTOFYY"
   # end

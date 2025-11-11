@@ -1,7 +1,7 @@
 require "spec"
-require "../src/cloudflare-d1"
+require "../src/d1"
 
-Cloudflare::D1.configure do |config|
+D1.configure do |config|
   config.account_id = ENV["ACCOUNT_ID"]
   config.api_token = ENV["API_TOKEN"]
 end

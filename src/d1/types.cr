@@ -1,4 +1,4 @@
-module Cloudflare::D1
+module D1
   # The details of the D1 database.
   struct Database
     include JSON::Serializable
@@ -19,18 +19,18 @@ module Cloudflare::D1
     getter! uuid : String
     # *(Optional)*
     getter! version : String
+    # Check if
+    getter? fetched = false
+
+    def initialize(@uuid)
+    end
   end
 
-  struct ReadReplication
+  # The read replication mode for the database. Use 'auto' to create replicas and allow
+  # D1 automatically place them around the world, or 'disabled' to not use any database
+  # replicas (it can take a few hours for all replicas to be deleted).
+  record ReadReplication, mode : Mode do
     include JSON::Serializable
-
-    # The read replication mode for the database. Use 'auto' to create replicas and
-    # allow D1 automatically place them around the world, or 'disabled' to not use
-    # any database replicas (it can take a few hours for all replicas to be deleted).
-    property mode : Mode
-
-    def initialize(@mode)
-    end
 
     enum Mode
       AUTO
