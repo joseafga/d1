@@ -6,13 +6,16 @@ module D1
   end
 
   class Context
-    @db : Database
+    @uuid : String?
+    @db : Database?
 
     def initialize(uuid : String)
-      @db = Database.new(uuid)
+      @uuid = uuid
+      @db = nil
     end
 
     def initialize(db : Database)
+      @uuid = nil
       @db = db
     end
 
@@ -21,7 +24,7 @@ module D1
         args.push value
       end
 
-      Api.query(@db.uuid, query, args)
+      Api.query(uuid, query, args)
       Nil
     end
 
@@ -30,7 +33,25 @@ module D1
         args.push value
       end
 
-      Api.query(@db.uuid, query, args)
+      Api.query(uuid, query, args)
+    end
+
+    def db : Database
+      if @db.nil?
+        @db = Api.get(@uuid)
+      end
+
+      @db
+    end
+
+    # The database is loaded lazily but sometimes you won't need the database information.
+    # If the UUID is available and you only need it, use this method instead of `@db.uuid`.
+    private def uuid : String
+      if db = @db
+        return db.uuid
+      end
+
+      @uuid.not_nil!
     end
   end
 end
