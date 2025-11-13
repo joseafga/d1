@@ -75,7 +75,7 @@ module D1
     #
     # SQL *args*.
     # Documentation say `Array<string>` but work with other basic types
-    def query(uuid : String, sql : String, args : Array(Any)? = nil)
+    def query(uuid : String, sql : String, args : Array(Any)? = nil) : Array(JSON::Any)
       url = URI.parse("#{D1.config.endpoint}/#{uuid}/query")
 
       response = request(method: "POST", url: url, body: { sql: sql, params: args }.to_json)
@@ -88,13 +88,13 @@ module D1
 
     # Returns the query result rows as arrays rather than objects. This is a performance
     # optimized version of the /query endpoint.
-    def raw(uuid : String, sql : String, args : Array(Any)? = nil)
+    def raw(uuid : String, sql : String, args : Array(Any)? = nil) : Hash(String, JSON::Any)
       url = URI.parse("#{D1.config.endpoint}/#{uuid}/raw")
 
       response = request(method: "POST", url: url, body: { sql: sql, params: args }.to_json)
       result = Response(JSON::Any).from_json(response).to_result
 
-      return result[0]["results"].as_a if result[0]["success"].as_bool
+      return result[0]["results"].as_h if result[0]["success"].as_bool
 
       raise "The result failed."
     end
