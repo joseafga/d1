@@ -143,4 +143,6 @@ module D1
       end
     end
   end
+
+  extend Api
 end

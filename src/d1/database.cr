@@ -5,6 +5,12 @@ module D1
     yield db
   end
 
+  def self.get(uuid, & : Database -> _)
+    db = Api.get(uuid)
+
+    yield db
+  end
+
   # The details of the D1 database.
   struct Database
     include JSON::Serializable
@@ -29,6 +35,22 @@ module D1
     def initialize(@uuid)
     end
 
+    # Shortcut to `D1::Api#update_database`
+    def update(read_replication : ReadReplication)
+      D1.update_database(uuid, read_replication)
+    end
+
+    # Shortcut to `D1::Api#update_partial`
+    def update_partial(read_replication : ReadReplication? = nil)
+      D1.update_database(uuid, read_replication)
+    end
+
+    # Shortcut to `D1::Api#delete`
+    def delete
+      D1.delete(uuid)
+    end
+
+    # Wrapper to `D1::Api#raw` but returns `Nil`
     def exec(query, *values, args = [] of Any) : Nil
       values.each do |value|
         args.push value
@@ -38,6 +60,7 @@ module D1
       Nil
     end
 
+    # Wrapper to `D1::Api#query`
     def query(query, *values, args = [] of Any)
       values.each do |value|
         args.push value
@@ -46,6 +69,7 @@ module D1
       Api.query(uuid, query, args)
     end
 
+    # Wrapper to `D1::Api#raw`
     def raw(query, *values, args = [] of Any)
       values.each do |value|
         args.push value
