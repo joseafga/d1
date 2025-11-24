@@ -57,7 +57,6 @@ module D1
       end
 
       Api.raw(uuid, query, args)
-      Nil
     end
 
     # Wrapper to `D1::Api#query`
